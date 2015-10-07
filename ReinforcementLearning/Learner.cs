@@ -12,14 +12,17 @@ namespace ReinforcementLearning
         where TActionValueFunction : IActionValueFunction<TState, TAction>, new()
     {
         TActionValueFunction Q;
-        IPolicy<TState, TAction> Policy;
+        IActionSelector<TState, TAction> ActionSelector;
+        IUpdateRule<TState, TAction> UpdateRule;
 
-        public Learner(IPolicy<TState, TAction> policy)
+        public Learner(IActionSelector<TState, TAction> actionSelector, IUpdateRule<TState, TAction> updateRule)
         {
+            ActionSelector = actionSelector;
+            UpdateRule = updateRule;
             Q = new TActionValueFunction();
         }
 
-        void RunEpisode()
+        public void RunEpisode()
         {
             var machine = new TStateMachine();
             var s = machine.InitialState;
@@ -27,11 +30,11 @@ namespace ReinforcementLearning
             while (!s.IsTerminal)
             {
                 var actions = machine.GetPossibleActions();
-                var a = Policy.ChooseAction(s, actions, Q);
+                var a = ActionSelector.ChooseAction(s, actions, Q);
                 var oldValue = Q.Evaluate(s, a);
                 double reward;
                 var newState = machine.PerformAction(a, out reward);
-                var newValue = Policy.GetNewValue(s, oldValue, newState, reward, Q);
+                var newValue = UpdateRule.GetNewValue(s, oldValue, newState, reward, Q);
                 Q.Update(s, a, newValue);
                 s = newState;
             }

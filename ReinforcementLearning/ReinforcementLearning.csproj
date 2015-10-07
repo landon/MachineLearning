@@ -40,9 +40,10 @@
   <ItemGroup>
     <Compile Include="IAction.cs" />
     <Compile Include="IActionValueFunction.cs" />
-    <Compile Include="IPolicy.cs" />
+    <Compile Include="IActionSelector.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="IStateMachine.cs" />
+    <Compile Include="IUpdateRule.cs" />
     <Compile Include="Learner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
