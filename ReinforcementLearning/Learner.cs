@@ -5,20 +5,22 @@ using System.Text;
 
 namespace ReinforcementLearning
 {
-    public class Learner<TState, TAction, TStateMachine, TActionValueFunction>
+    public class Learner<TState, TAction, TStateMachine, TActionValueFunction, TActionSelector, TUpdateRule>
         where TState : IState
         where TAction : IAction
         where TStateMachine : IStateMachine<TState, TAction>, new()
         where TActionValueFunction : IActionValueFunction<TState, TAction>, new()
+        where TActionSelector : IActionSelector<TState, TAction>, new()
+        where TUpdateRule : IUpdateRule<TState, TAction>, new()
     {
         TActionValueFunction Q;
         IActionSelector<TState, TAction> ActionSelector;
         IUpdateRule<TState, TAction> UpdateRule;
 
-        public Learner(IActionSelector<TState, TAction> actionSelector, IUpdateRule<TState, TAction> updateRule)
+        public Learner()
         {
-            ActionSelector = actionSelector;
-            UpdateRule = updateRule;
+            ActionSelector = new TActionSelector();
+            UpdateRule = new TUpdateRule();
             Q = new TActionValueFunction();
         }
 
