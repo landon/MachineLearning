@@ -40,6 +40,13 @@
   <ItemGroup>
     <Compile Include="BasicQUpdateRule.cs" />
     <Compile Include="EpsilonGreedyActionSelector.cs" />
+    <Compile Include="GameSpecific\GameGreedyActionSelector.cs" />
+    <Compile Include="GameSpecific\GameLearningAgent.cs" />
+    <Compile Include="GameSpecific\GameUpdateRule.cs" />
+    <Compile Include="GameSpecific\IGameActionSelector.cs" />
+    <Compile Include="GameSpecific\IGameUpdateRule.cs" />
+    <Compile Include="GameSpecific\IGameValueFunction.cs" />
+    <Compile Include="GameSpecific\TableGameValueFunction.cs" />
     <Compile Include="IAction.cs" />
     <Compile Include="IActionValueFunction.cs" />
     <Compile Include="IActionSelector.cs" />

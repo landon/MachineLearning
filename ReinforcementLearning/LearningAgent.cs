@@ -6,8 +6,8 @@ using System.Text;
 namespace ReinforcementLearning
 {
     public class LearningAgent<TState, TAction, TActionValueFunction, TActionSelector, TUpdateRule> : IAgent<TState, TAction>
-        where TState : IState
-        where TAction : IAction
+        where TState : IState<TState, TAction>
+        where TAction : IAction<TAction>
         where TActionValueFunction : IActionValueFunction<TState, TAction>, new()
         where TActionSelector : IActionSelector<TState, TAction>, new()
         where TUpdateRule : IUpdateRule<TState, TAction>, new()
@@ -35,6 +35,18 @@ namespace ReinforcementLearning
             Q.Update(s, a, newValue);
 
             return newState;
+        }
+
+        public void BeginEpisode()
+        {
+        }
+
+        public void EndEpisode(double value)
+        {
+        }
+
+        public void Save(string file)
+        {
         }
     }
 }

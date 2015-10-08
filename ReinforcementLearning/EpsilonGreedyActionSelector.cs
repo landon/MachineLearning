@@ -6,8 +6,8 @@ using System.Text;
 namespace ReinforcementLearning
 {
     public class EpsilonGreedyActionSelector<TState, TAction> : IActionSelector<TState, TAction>
-        where TState : IState
-        where TAction : IAction
+        where TState : IState<TState, TAction>
+        where TAction : IAction<TAction>
     {
         public static double Epsilon = 0.1;
         Random RNG = new Random(DateTime.Now.Millisecond);

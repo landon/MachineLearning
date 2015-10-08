@@ -6,43 +6,46 @@ using System.Text;
 namespace ReinforcementLearning
 {
     public class TableActionValueFunction<TState, TAction> : IActionValueFunction<TState, TAction>
-        where TState : IState
-        where TAction : IAction
+        where TState : IState<TState, TAction>
+        where TAction : IAction<TAction>
     {
-        Dictionary<TState, Dictionary<TAction, double>> _lookup = new Dictionary<TState, Dictionary<TAction, double>>();
+        Dictionary<string, Dictionary<string, double>> _lookup = new Dictionary<string, Dictionary<string, double>>();
         Func<double> _initialValueSelector;
 
         public TableActionValueFunction()
         {
             var rng = new Random();
-            _initialValueSelector = () => rng.NextDouble();
+            //_initialValueSelector = () => rng.NextDouble();
+            _initialValueSelector = () => 0.1;
         }
 
         public double Evaluate(TState s, TAction a)
         {
+            var astr = a.ToString();
             var table = GetActionTable(s);
             double value;
-            if (!table.TryGetValue(a, out value))
+            if (!table.TryGetValue(astr, out value))
             {
                 value = _initialValueSelector();
-                table[a] = value;
+                table[astr] = value;
             }
 
             return value;
         }
 
-        public void Update(TState s, TAction a, double value)
+        public void Update(TState oldState, TAction a, double value)
         {
-            GetActionTable(s)[a] = value;
+            GetActionTable(oldState)[a.ToString()] = value;
         }
 
-        Dictionary<TAction, double> GetActionTable(TState state)
+        Dictionary<string, double> GetActionTable(TState state)
         {
-            Dictionary<TAction, double> table;
-            if (!_lookup.TryGetValue(state, out table))
+            var s = state.ToString();
+            Dictionary<string, double> table;
+            if (!_lookup.TryGetValue(s, out table))
             {
-                table = new Dictionary<TAction, double>();
-                _lookup[state] = table;
+                table = new Dictionary<string, double>();
+                _lookup[s] = table;
             }
 
             return table;

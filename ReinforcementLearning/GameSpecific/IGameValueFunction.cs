@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ReinforcementLearning
+namespace ReinforcementLearning.GameSpecific
 {
-    public interface IAgent<TState, TAction>
+    public interface IGameValueFunction<TState, TAction>
         where TState : IState<TState, TAction>
         where TAction : IAction<TAction>
     {
-        TState Act(IWorld<TState, TAction> world);
-        void BeginEpisode();
-        void EndEpisode(double value);
+        double Evaluate(TState s);
+        void Update(TState s, double value);
 
         void Save(string file);
+        void Load(string file);
     }
 }

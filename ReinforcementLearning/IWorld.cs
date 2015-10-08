@@ -6,8 +6,8 @@ using System.Text;
 namespace ReinforcementLearning
 {
     public interface IWorld<TState, TAction>
-        where TState : IState
-        where TAction : IAction
+        where TState : IState<TState, TAction>
+        where TAction : IAction<TAction>
     {
         TState CurrentState { get; }
         List<TAction> GetPossibleActions();

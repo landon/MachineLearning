@@ -5,7 +5,9 @@ using System.Text;
 
 namespace ReinforcementLearning
 {
-    public interface IAction
+    public interface IAction<TAction>
+        where TAction : IAction<TAction>
     {
+        int Agent { get; set; }
     }
 }

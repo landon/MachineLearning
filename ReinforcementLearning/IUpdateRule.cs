@@ -6,8 +6,8 @@ using System.Text;
 namespace ReinforcementLearning
 {
     public interface IUpdateRule<TState, TAction>
-        where TState : IState
-        where TAction : IAction
+        where TState : IState<TState, TAction>
+        where TAction : IAction<TAction>
     {
         double GetNewValue(TState oldState, double oldValue, TState newState, double reward, IActionValueFunction<TState, TAction> Q, List<TAction> actions);
     }

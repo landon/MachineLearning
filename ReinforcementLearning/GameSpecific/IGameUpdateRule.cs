@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ReinforcementLearning
+namespace ReinforcementLearning.GameSpecific
 {
-    public interface IActionSelector<TState, TAction>
+    public interface IGameUpdateRule<TState, TAction>
         where TState : IState<TState, TAction>
         where TAction : IAction<TAction>
     {
-        TAction ChooseAction(TState s, List<TAction> actions, IActionValueFunction<TState, TAction> Q);
+        double GetNewValue(double previousValue, double value, double reward);
     }
 }

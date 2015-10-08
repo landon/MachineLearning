@@ -6,11 +6,11 @@ using System.Text;
 namespace ReinforcementLearning
 {
     public class BasicQUpdateRule<TState, TAction> : IUpdateRule<TState, TAction>
-        where TState : IState
-        where TAction : IAction
+        where TState : IState<TState, TAction>
+        where TAction : IAction<TAction>
     {
-        public static double DiscountFactor = 0.9;
-        public static double LearningRate = 0.2;
+        public static double DiscountFactor = 1.0;
+        public static double LearningRate = 0.3;
 
         public double GetNewValue(TState oldState, double oldValue, TState newState, double reward, IActionValueFunction<TState, TAction> Q, List<TAction> actions)
         {
