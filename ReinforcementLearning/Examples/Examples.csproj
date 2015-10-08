@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B028D84D-94DE-4B0F-A186-8B09582A63A7}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{70A040C7-BC0B-433B-9E67-59321698E7B9}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReinforcementLearning</RootNamespace>
-    <AssemblyName>ReinforcementLearning</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>Examples</RootNamespace>
+    <AssemblyName>Examples</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -20,14 +22,17 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -38,20 +43,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicQUpdateRule.cs" />
-    <Compile Include="EpsilonGreedyActionSelector.cs" />
-    <Compile Include="IAction.cs" />
-    <Compile Include="IActionValueFunction.cs" />
-    <Compile Include="IActionSelector.cs" />
-    <Compile Include="IAgent.cs" />
-    <Compile Include="IState.cs" />
-    <Compile Include="IWorld.cs" />
-    <Compile Include="IUpdateRule.cs" />
-    <Compile Include="LearningAgent.cs" />
-    <Compile Include="LearnerHelper.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RandomAgent.cs" />
-    <Compile Include="TableActionValueFunction.cs" />
+    <Compile Include="TicTacToe\Action.cs" />
+    <Compile Include="TicTacToe\Constants.cs" />
+    <Compile Include="TicTacToe\World.cs" />
+    <Compile Include="TicTacToe\State.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReinforcementLearning.csproj">
+      <Project>{b028d84d-94de-4b0f-a186-8b09582a63a7}</Project>
+      <Name>ReinforcementLearning</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

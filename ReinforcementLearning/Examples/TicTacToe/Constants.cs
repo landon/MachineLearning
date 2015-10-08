@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ReinforcementLearning
+namespace Examples
 {
-    public interface IState
+    static partial class TicTacToe
     {
+        public const int N = 3;
     }
 }

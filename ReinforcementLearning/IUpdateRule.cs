@@ -9,6 +9,6 @@ namespace ReinforcementLearning
         where TState : IState
         where TAction : IAction
     {
-        double GetNewValue(TState oldState, double oldValue, TState newState, double reward, IActionValueFunction<TState, TAction> Q);
+        double GetNewValue(TState oldState, double oldValue, TState newState, double reward, IActionValueFunction<TState, TAction> Q, List<TAction> actions);
     }
 }
