@@ -105,6 +105,21 @@ namespace Examples
                         return "-";
                     }))));
             }
+
+
+            public double[] AsDoubles()
+            {
+                var d = new double[N * N];
+                for (int i = 0; i < N; i++)
+                {
+                    for (int j = 0; j < N; j++)
+                    {
+                        d[N * i + j] = _square[i, j];
+                    }
+                }
+
+                return d;
+            }
         }
     }
 }

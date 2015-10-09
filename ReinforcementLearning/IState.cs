@@ -12,5 +12,6 @@ namespace ReinforcementLearning
         TState PerformAction(TAction a);
         bool IsTerminal { get; }
         double TerminalValue { get; }
+        double[] AsDoubles();
     }
 }

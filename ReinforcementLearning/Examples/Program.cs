@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Examples
 {
+    using TTT = TicTacToe;
     class Program
     {
         static void Main(string[] args)
@@ -16,7 +17,7 @@ namespace Examples
 
         static void TicTacToe()
         {
-            int chunk = 100000;
+            int chunk = 10000;
 
             var lastAgent1Wins = 0;
             var lastAgent2Wins = 0;
@@ -25,19 +26,27 @@ namespace Examples
             var agent2Wins = 0;
             var draws = 0;
 
-            //var agent1 = new RandomAgent<TicTacToe.State, TicTacToe.Action>();
-            //var agent2 = new RandomAgent<TicTacToe.State, TicTacToe.Action>();
+            //var agent1 = new RandomAgent<TTT.State, TTT.Action>();
+           // var agent2 = new RandomAgent<TTT.State, TTT.Action>();
 
-            //var agent1 = new LearningAgent<TicTacToe.State, TicTacToe.Action, TableActionValueFunction<TicTacToe.State, TicTacToe.Action>, EpsilonGreedyActionSelector<TicTacToe.State, TicTacToe.Action>, BasicQUpdateRule<TicTacToe.State, TicTacToe.Action>>();
-            //var agent2 = new LearningAgent<TicTacToe.State, TicTacToe.Action, TableActionValueFunction<TicTacToe.State, TicTacToe.Action>, EpsilonGreedyActionSelector<TicTacToe.State, TicTacToe.Action>, BasicQUpdateRule<TicTacToe.State, TicTacToe.Action>>();
+            //var agent1 = new LearningAgent<TTT.State, TTT.Action, TableActionValueFunction<TTT.State, TTT.Action>, EpsilonGreedyActionSelector<TTT.State, TTT.Action>, BasicQUpdateRule<TTT.State, TTT.Action>>();
+            //var agent2 = new LearningAgent<TTT.State, TTT.Action, TableActionValueFunction<TTT.State, TTT.Action>, EpsilonGreedyActionSelector<TTT.State, TTT.Action>, BasicQUpdateRule<TTT.State, TTT.Action>>();
 
-            var agent1 = new GameLearningAgent<TicTacToe.State, TicTacToe.Action, TableGameValueFunction<TicTacToe.State, TicTacToe.Action>, GameGreedyActionSelector<TicTacToe.State, TicTacToe.Action>, GameUpdateRule<TicTacToe.State, TicTacToe.Action>>();
-            var agent2 = new GameLearningAgent<TicTacToe.State, TicTacToe.Action, TableGameValueFunction<TicTacToe.State, TicTacToe.Action>, GameGreedyActionSelector<TicTacToe.State, TicTacToe.Action>, GameUpdateRule<TicTacToe.State, TicTacToe.Action>>();
-            
+          //  var agent1 = new GameLearningAgent<TTT.State, TTT.Action, TableGameValueFunction<TTT.State, TTT.Action>, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>("agent1.txt");
+           // var agent2 = new GameLearningAgent<TTT.State, TTT.Action, TableGameValueFunction<TTT.State, TTT.Action>, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>("agent2.txt");
+
+//            var agent1 = new GameLearningAgent<TTT.State, TTT.Action, TableGameValueFunction<TTT.State, TTT.Action>, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>();
+            //var agent2 = new GameLearningAgent<TTT.State, TTT.Action, TableGameValueFunction<TTT.State, TTT.Action>, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>();
+            //GameUpdateRule<TTT.State, TTT.Action>.LearningRate = 0.001;
+           // GameGreedyActionSelector<TTT.State, TTT.Action>.Epsilon = 0.0000;
+
+            var agent1 = new GameLearningAgent<TTT.State, TTT.Action, TTT.NeuralNetValueFunction, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>();
+            var agent2 = new GameLearningAgent<TTT.State, TTT.Action, TTT.NeuralNetValueFunction, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>();
+
             int game = 1;
             while (true)
             {
-                var world = new TicTacToe.World();
+                var world = new TTT.World();
                 agent1.BeginEpisode();
                 agent2.BeginEpisode();
                 int move = 0;
@@ -108,7 +117,7 @@ namespace Examples
 
                 if (game % 500000 == 0)
                 {
-                    GameUpdateRule<TicTacToe.State, TicTacToe.Action>.LearningRate /= 2.0;
+                    GameUpdateRule<TTT.State, TTT.Action>.LearningRate /= 2.0;
                 }
             }
         }
