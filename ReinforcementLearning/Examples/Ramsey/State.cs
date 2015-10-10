@@ -13,7 +13,6 @@ namespace Examples
         public class State : IState<State, Action>
         {
             static ThreadLocal<Dictionary<int, Dictionary<int, Tuple<int, int>>>> EdgeLookup = new ThreadLocal<Dictionary<int, Dictionary<int, Tuple<int, int>>>>(() => new Dictionary<int, Dictionary<int, Tuple<int, int>>>());
-            Dictionary<int, Dictionary<int, List<int>>> _coloredNeighborLookup = new Dictionary<int, Dictionary<int, List<int>>>();
 
             int[] _edgeColor;
             public List<int> LegalMoves { get; private set; }
@@ -29,20 +28,10 @@ namespace Examples
                 LegalMoves = Enumerable.Range(0, _edgeColor.Length).ToList();
             }
 
-            public State(int[] edgeColor, List<int> legalMoves, Dictionary<int, Dictionary<int, List<int>>> coloredNeighborLookup)
+            public State(int[] edgeColor, List<int> legalMoves)
             {
                 _edgeColor = edgeColor.ToArray();
                 LegalMoves = legalMoves.ToList();
-
-                _coloredNeighborLookup = new Dictionary<int, Dictionary<int, List<int>>>();
-                foreach (var kvp in coloredNeighborLookup)
-                {
-                    var d = new Dictionary<int, List<int>>();
-                    foreach (var kvp2 in kvp.Value)
-                        d[kvp2.Key] = kvp2.Value.ToList();
-
-                    _coloredNeighborLookup[kvp.Key] = d;
-                }
             }
 
             public State PerformAction(Action a)
@@ -83,6 +72,27 @@ namespace Examples
                 return s.IsCliqueOfSize(common, winSize - 2, lastAction.Agent);
             }
 
+            List<int> GetNeighborsOfColor(int v, int color)
+            {
+                var nn = new List<int>();
+
+                int i = N * v - v * (v + 1) / 2;
+                for (int j = 0; j < N - 1 - v; j++)
+                {
+                    if (_edgeColor[i + j] == color)
+                        nn.Add(v + j + 1);
+                }
+
+                for (int w = 0; w < v; w++)
+                {
+                    var j = N * w - w * (w + 1) / 2 + v - w - 1;
+                    if (_edgeColor[j] == color)
+                        nn.Add(w);
+                }
+
+                return nn;
+            }
+
             bool IsCliqueOfSize(List<int> vertices, int size, int color)
             {
                 if (vertices.Count < size)
@@ -102,7 +112,7 @@ namespace Examples
 
             State CloneState()
             {
-                return new State(_edgeColor, LegalMoves, _coloredNeighborLookup);
+                return new State(_edgeColor, LegalMoves);
             }
 
             public override string ToString()
@@ -135,31 +145,6 @@ namespace Examples
                 }
 
                 return d[e];
-            }
-
-            Dictionary<int, List<int>> GetNeighbors(int v)
-            {
-                Dictionary<int, List<int>> d;
-                if (!_coloredNeighborLookup.TryGetValue(v, out d))
-                {
-                    d = new Dictionary<int, List<int>>();
-                    _coloredNeighborLookup[v] = d;
-                }
-
-                return d;
-            }
-            List<int> GetNeighborsOfColor(int v, int color)
-            {
-                var d = GetNeighbors(v);
-
-                List<int> neighbors;
-                if (!d.TryGetValue(color, out neighbors))
-                {
-                    neighbors = new List<int>();
-                    d[color] = neighbors;
-                }
-
-                return neighbors;
             }
         }
     }
