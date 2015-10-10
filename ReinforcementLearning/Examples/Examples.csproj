@@ -49,6 +49,13 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ramsey\Action.cs" />
+    <Compile Include="Ramsey\Constants.cs" />
+    <Compile Include="Ramsey\GraphUtility.cs" />
+    <Compile Include="Ramsey\ListUtility.cs" />
+    <Compile Include="Ramsey\NeuralNetValueFunction.cs" />
+    <Compile Include="Ramsey\State.cs" />
+    <Compile Include="Ramsey\World.cs" />
     <Compile Include="TicTacToe\Action.cs" />
     <Compile Include="TicTacToe\Constants.cs" />
     <Compile Include="TicTacToe\NeuralNetValueFunction.cs" />

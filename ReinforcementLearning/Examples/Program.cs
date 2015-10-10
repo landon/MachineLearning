@@ -8,6 +8,7 @@ using System.Text;
 namespace Examples
 {
     using TTT = TicTacToe;
+    using RAM = Ramsey;
     class Program
     {
         static void Main(string[] args)
@@ -17,7 +18,7 @@ namespace Examples
 
         static void TicTacToe()
         {
-            int chunk = 10000;
+            int chunk = 10;
 
             var lastAgent1Wins = 0;
             var lastAgent2Wins = 0;
@@ -40,13 +41,16 @@ namespace Examples
             //GameUpdateRule<TTT.State, TTT.Action>.LearningRate = 0.001;
            // GameGreedyActionSelector<TTT.State, TTT.Action>.Epsilon = 0.0000;
 
-            var agent1 = new GameLearningAgent<TTT.State, TTT.Action, TTT.NeuralNetValueFunction, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>();
-            var agent2 = new GameLearningAgent<TTT.State, TTT.Action, TTT.NeuralNetValueFunction, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>();
+           // var agent1 = new GameLearningAgent<TTT.State, TTT.Action, TTT.NeuralNetValueFunction, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>();
+           // var agent2 = new GameLearningAgent<TTT.State, TTT.Action, TTT.NeuralNetValueFunction, GameGreedyActionSelector<TTT.State, TTT.Action>, GameUpdateRule<TTT.State, TTT.Action>>();
+
+            var agent1 = new GameLearningAgent<RAM.State, RAM.Action, RAM.NeuralNetValueFunction, GameGreedyActionSelector<RAM.State, RAM.Action>, GameUpdateRule<RAM.State, RAM.Action>>();
+            var agent2 = new GameLearningAgent<RAM.State, RAM.Action, RAM.NeuralNetValueFunction, GameGreedyActionSelector<RAM.State, RAM.Action>, GameUpdateRule<RAM.State, RAM.Action>>();
 
             int game = 1;
             while (true)
             {
-                var world = new TTT.World();
+                var world = new RAM.World();
                 agent1.BeginEpisode();
                 agent2.BeginEpisode();
                 int move = 0;
@@ -68,6 +72,9 @@ namespace Examples
                             {
                                 agent1.EndEpisode(0.0);
                                 agent2.EndEpisode(0.0);
+
+                                Console.WriteLine(state.ToString());
+                                Console.ReadKey();
                                 draws++;
                                 break;
                             }
@@ -90,6 +97,9 @@ namespace Examples
                                 agent1.EndEpisode(0.0);
                                 agent2.EndEpisode(0.0);
                                 draws++;
+
+                                Console.WriteLine(state.ToString());
+                                Console.ReadKey();
                                 break;
                             }
                         }

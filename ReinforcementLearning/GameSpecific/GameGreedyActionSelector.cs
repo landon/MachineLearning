@@ -35,6 +35,8 @@ namespace ReinforcementLearning.GameSpecific
                 }
             }
 
+            if (bestAction == null)
+                System.Diagnostics.Debugger.Break();
             return bestAction;
         }
 

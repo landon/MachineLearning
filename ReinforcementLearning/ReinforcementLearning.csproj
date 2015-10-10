@@ -45,8 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicQUpdateRule.cs" />
-    <Compile Include="EpsilonGreedyActionSelector.cs" />
     <Compile Include="GameSpecific\GameGreedyActionSelector.cs" />
     <Compile Include="GameSpecific\GameLearningAgent.cs" />
     <Compile Include="GameSpecific\GameUpdateRule.cs" />
@@ -55,17 +53,11 @@
     <Compile Include="GameSpecific\IGameValueFunction.cs" />
     <Compile Include="GameSpecific\TableGameValueFunction.cs" />
     <Compile Include="IAction.cs" />
-    <Compile Include="IActionValueFunction.cs" />
-    <Compile Include="IActionSelector.cs" />
     <Compile Include="IAgent.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="IWorld.cs" />
-    <Compile Include="IUpdateRule.cs" />
-    <Compile Include="LearningAgent.cs" />
-    <Compile Include="LearnerHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomAgent.cs" />
-    <Compile Include="TableActionValueFunction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
