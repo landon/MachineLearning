@@ -8,8 +8,8 @@ namespace Examples
 {
     static partial class Ramsey
     {
-        public static int N = 43;
-        public static int A = 5;
-        public static int B = 5;
+        public static int N = 17;
+        public static int A = 4;
+        public static int B = 4;
     }
 }

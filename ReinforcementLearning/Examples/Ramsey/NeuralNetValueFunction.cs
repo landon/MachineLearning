@@ -21,8 +21,7 @@ namespace Examples
             {
                 _network = new BasicNetwork();
                 _network.AddLayer(new BasicLayer(null, true, N * (N - 1) / 2));
-                _network.AddLayer(new BasicLayer(new ActivationTANH(), true, 6));
-                _network.AddLayer(new BasicLayer(new ActivationTANH(), true, 3));
+                _network.AddLayer(new BasicLayer(new ActivationTANH(), true, N));
                 _network.AddLayer(new BasicLayer(new ActivationTANH(), false, 1));
                 _network.Structure.FinalizeStructure();
                 _network.Reset();
@@ -48,7 +47,9 @@ namespace Examples
                 var train = new Encog.Neural.Networks.Training.Propagation.Back.Backpropagation(_network, trainingSet);
                 train.BatchSize = 1;
 
-                train.Iteration();
+                train.Iteration(2);
+                if (train.Error > 0.01)
+                    train.Iteration(3);
             }
 
             public void Save(string file)
