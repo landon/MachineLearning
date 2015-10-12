@@ -18,7 +18,7 @@ namespace Examples
 
         static void TicTacToe()
         {
-            int chunk = 10;
+            int chunk = 2;
 
             var lastAgent1Wins = 0;
             var lastAgent2Wins = 0;
@@ -56,7 +56,7 @@ namespace Examples
                 int move = 0;
                 while (true)
                 {
-                    if ((game + move) % 2 == 0)
+                    if ((0 + move) % 2 == 0)
                     {
                         var state = agent1.Act(world);
                         if (state.IsTerminal)

@@ -21,7 +21,7 @@ namespace Examples
             {
                 _network = new BasicNetwork();
                 _network.AddLayer(new BasicLayer(null, true, N * (N - 1) / 2));
-                _network.AddLayer(new BasicLayer(new ActivationTANH(), true, N));
+                _network.AddLayer(new BasicLayer(new ActivationTANH(), true, 6));
                 _network.AddLayer(new BasicLayer(new ActivationTANH(), false, 1));
                 _network.Structure.FinalizeStructure();
                 _network.Reset();
