@@ -70,10 +70,12 @@ class QTorch(Q):
             super().__init__()
             width = 16
             self._in = torch.nn.Linear(in_features, width)
+            self._f1 = torch.nn.Linear(width, width)
             self._out = torch.nn.Linear(width, out_features)
         
         def forward(self, x):
             x = F.relu(self._in(x))
+            x = F.relu(self._f1(x))
             x = self._out(x)
             return x
 

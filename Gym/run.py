@@ -15,10 +15,7 @@ def exercise_agent(gymName, episodes, render=True, convolutional=False):
 
             action = agent.act()
             state, reward, done, info = env.step(action[0, 0].item())
-            if done:
-                reward += t / 100.0
             total_reward += reward
-
             agent.observe(state, reward, done)
             if done:
                 max_t = max(max_t, t)
