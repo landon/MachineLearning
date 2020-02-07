@@ -1,12 +1,10 @@
 import gym
-from random_agent import RandomAgent
 from q_agent import QAgent
 
-AgentType = QAgent
-def exercise_agent(gymName, episodes, render=True):
+def exercise_agent(gymName, episodes, render=True, convolutional=False):
     max_t = 0
     env = gym.make(gymName).env
-    agent = AgentType(env.action_space.n)
+    agent = QAgent(env.action_space.n, convolutional)
     for i_episode in range(episodes):
         state = env.reset()
         agent.observe(state, 0, False)
@@ -17,6 +15,8 @@ def exercise_agent(gymName, episodes, render=True):
 
             action = agent.act()
             state, reward, done, info = env.step(action[0, 0].item())
+            if done:
+                reward += t / 100.0
             total_reward += reward
 
             agent.observe(state, reward, done)
@@ -27,4 +27,4 @@ def exercise_agent(gymName, episodes, render=True):
     env.close()
 
 
-exercise_agent('MountainCar-v0', 1000, render=True)
+exercise_agent('Breakout-ram-v0', 100000, render=True)

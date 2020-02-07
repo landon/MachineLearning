@@ -8,11 +8,12 @@ from replay_memory import ReplayMemory
 BATCH_SIZE = 64
 ALPHA = 0.25
 GAMMA = 0.75
-REPLAY_MEMORY_SIZE = 2 ** 12
+REPLAY_MEMORY_SIZE = 2 ** 14
 
 class QTorch(Q):
-    def __init__(self, actionCount, gamma=GAMMA, alpha=ALPHA, batchSize = BATCH_SIZE, replayMemorySize = REPLAY_MEMORY_SIZE):
+    def __init__(self, actionCount, convolutional=False, gamma=GAMMA, alpha=ALPHA, batchSize = BATCH_SIZE, replayMemorySize = REPLAY_MEMORY_SIZE):
         super().__init__(actionCount)
+        self._convolutional = convolutional
         self._gamma = gamma
         self._alpha = alpha
         self._batchSize = batchSize
@@ -23,7 +24,10 @@ class QTorch(Q):
 
     def initNN(self, state):
         if self._NN is None:
-            self._NN = QTorch.NeuralNet(len(state), self._actionCount)
+            if self._convolutional:
+                self._NN = QTorch.ConvNet(state.shape, self._actionCount)
+            else:
+                self._NN = QTorch.MLP(len(state), self._actionCount)
             self._optimizer = torch.optim.RMSprop(self._NN.parameters())
 
     def getActionScores(self, state):
@@ -61,14 +65,36 @@ class QTorch(Q):
         loss.backward()
         self._optimizer.step()
 
-    class NeuralNet(torch.nn.Module):
+    class MLP(torch.nn.Module):
         def __init__(self, in_features, out_features):
             super().__init__()
-            width = 64
+            width = 16
             self._in = torch.nn.Linear(in_features, width)
             self._out = torch.nn.Linear(width, out_features)
         
         def forward(self, x):
             x = F.relu(self._in(x))
             x = self._out(x)
+            return x
+
+    class ConvNet(torch.nn.Module):
+        def __init__(self, in_shape, out_features):
+            super().__init__()
+            self._in_shape = in_shape
+            self._out_features = out_features
+            width = 8
+            self.conv1 = torch.nn.Conv2d(self._in_shape[0], 32, kernel_size=3, stride=2)
+            self.conv2 = torch.nn.Conv2d(32, 32, kernel_size=3, stride=2, padding=1)
+            self.conv3 = torch.nn.Conv2d(32, 32, kernel_size=3, stride=2, padding=1)
+            self.fc4 = torch.nn.Linear(32*5*4, width)
+            self.fc5 = torch.nn.Linear(width, self._out_features)
+        
+        def forward(self, x):
+            x = x.view(x.size(0), self._in_shape[0], self._in_shape[1], self._in_shape[2])
+            x = F.relu(self.conv1(x))
+            x = F.relu(self.conv2(x))
+            x = F.relu(self.conv3(x))
+            x = F.relu(self.fc4(x.view(x.size(0), -1)))
+            x = self.fc5(x.view(x.size(0), -1))
+
             return x

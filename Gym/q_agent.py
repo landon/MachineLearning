@@ -4,14 +4,14 @@ import torch
 from q_torch import QTorch
 import math
 
-EPS_START = 0.999
+EPS_START = 0.99
 EPS_END = 0.01
-EPS_DECAY = 1000
+EPS_DECAY = 500
 
 class QAgent(Agent):
-    def __init__(self, actionCount):
+    def __init__(self, actionCount, convolutional=False):
         super().__init__(actionCount)
-        self._Q = QTorch(actionCount)
+        self._Q = QTorch(actionCount, convolutional)
         self._currentState = None
         self._lastAction = 0
         self._iterations = 0
