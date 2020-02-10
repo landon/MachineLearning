@@ -1,11 +1,11 @@
 from agent import Agent
 import random
-import torch
 from q_torch import QTorch
 import math
+import numpy as np
 
-EPS_START = 0.8
-EPS_END = 0.01
+EPS_START = 0.99
+EPS_END = 0.001
 EPS_DECAY = 200
 
 class QAgent(Agent):
@@ -19,14 +19,14 @@ class QAgent(Agent):
     def observe(self, state, reward, done):
         self._Q.update(self._currentState, self._lastAction, reward, state)
         self._currentState = state
-        
+
     def act(self):
         self._iterations += 1
         eps_threshold = EPS_END + (EPS_START - EPS_END) * math.exp(-1.0 * self._iterations / EPS_DECAY)
-        action = torch.LongTensor([[random.randrange(0, self._actionCount)]])
+        action = random.randrange(0, self._actionCount)
         if self._currentState is not None:
             scores = self._Q.getActionScores(self._currentState)
-            bestAction = scores.data.max(1)[1].view(1, 1)
+            bestAction = np.argmax(scores)
             if random.random() > eps_threshold:
                 action = bestAction
         self._lastAction = action

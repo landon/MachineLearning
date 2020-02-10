@@ -4,9 +4,10 @@ import torch.nn
 from torch.functional import F
 from torch.autograd import Variable
 from replay_memory import ReplayMemory
+import numpy as np
 
 BATCH_SIZE = 64
-ALPHA = 0.25
+ALPHA = 0.5
 GAMMA = 0.75
 REPLAY_MEMORY_SIZE = 2 ** 14
 
@@ -32,14 +33,14 @@ class QTorch(Q):
 
     def getActionScores(self, state):
         self.initNN(state)
-        return self._NN(Variable(torch.FloatTensor([state])).type(torch.FloatTensor))
+        return self._NN(Variable(torch.FloatTensor([state])).type(torch.FloatTensor)).detach()[0].numpy()
         
     def update(self, lastState, lastAction, reward, state):
         if lastState is None:
             return
 
         self.initNN(state)
-        self._memory.push((torch.FloatTensor([lastState]), lastAction, torch.FloatTensor([reward]), torch.FloatTensor([state])))
+        self._memory.push((torch.FloatTensor([lastState]), torch.LongTensor([[lastAction]]), torch.FloatTensor([reward]), torch.FloatTensor([state])))
 
         if len(self._memory) < self._batchSize:
             return
@@ -51,7 +52,6 @@ class QTorch(Q):
         batch_action = torch.cat(batch_action)
         batch_reward = torch.cat(batch_reward)
         batch_next_state = torch.cat(batch_next_state)
-
         batch_prediction = self._NN(batch_state)
         batch_next_prediction = self._NN(batch_next_state)
 
@@ -70,12 +70,10 @@ class QTorch(Q):
             super().__init__()
             width = 16
             self._in = torch.nn.Linear(in_features, width)
-            self._f1 = torch.nn.Linear(width, width)
             self._out = torch.nn.Linear(width, out_features)
         
         def forward(self, x):
             x = F.relu(self._in(x))
-            x = F.relu(self._f1(x))
             x = self._out(x)
             return x
 
