@@ -12,7 +12,6 @@ def basic_preprocess(train, test, out_column, drop_columns=None, categorical=Fal
   train = train.copy()
   test = test.copy()
   if drop_columns:
-    print('dropping: ' + str(drop_columns))
     train.drop(drop_columns, axis=1, inplace=True)
     test.drop(drop_columns, axis=1, inplace=True)
 
@@ -32,42 +31,25 @@ def basic_preprocess(train, test, out_column, drop_columns=None, categorical=Fal
   objects = list(features.select_dtypes(include=[np.number]).columns.values)
   impute_with_mode(features, objects)
 
-  print('running iterative imputer...')
-  imp = IterativeImputer(max_iter=10, sample_posterior=True, random_state=seed)
   numerics = list(features.select_dtypes(include=[np.number]).columns.values)
-  imp.fit(features[numerics])
-  features[numerics] = imp.transform(features[numerics])
+  if len(numerics) >= 2:
+    imp = IterativeImputer(max_iter=10, sample_posterior=True, random_state=seed)
+    imp.fit(features[numerics])
+    features[numerics] = imp.transform(features[numerics])
+  elif numerics:
+    impute_with_median(features, numerics)
   
-  print('one-hot encoding...')
   final_features = pd.get_dummies(features).reset_index(drop=True)
-  
-  print('normalizing columns')
   normalize_columns(final_features)
 
   X = final_features.iloc[:len(y), :]
   X_sub = final_features.iloc[len(X):, :]
 
-  overfit = []
-  for i in X.columns:
-      counts = X[i].value_counts()
-      zeros = counts.iloc[0]
-      if zeros / len(X) * 100 > 99.94:
-          overfit.append(i)
-
-  overfit = list(overfit)
-  if overfit:
-    print('dropping: ' + str(overfit))
-
-  X = X.drop(overfit, axis=1).copy()
-  X_sub = X_sub.drop(overfit, axis=1).copy()
-
   return X, y, X_sub, denormalize
 
-def count_values(dataframe):
-  count = {}
-  for c in dataframe:
-    count[c] = dataframe[c].value_counts()
-  return count
+def impute_with_median(dataframe, columns):
+  for c in columns:
+    dataframe[c] = dataframe[c].fillna((dataframe[c].median()))
 
 def impute_with_mode(dataframe, columns):
   for c in columns:
@@ -86,24 +68,44 @@ def normalize_columns(dataframe, columns = None):
 if __name__ == '__main__':
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+    from sklearn.linear_model import BayesianRidge
+    from random import random
+
+    baseline = pd.read_csv('c:/kaggle_test/bay_baseline.csv')['SalePrice'].to_numpy()
 
     root = 'C:/Users/landon/Documents/GitHub/MachineLearning/kaggle/data/house_prices/'
 
     train = pd.read_csv(root + 'train.csv')
     test = pd.read_csv(root + 'test.csv')
 
-    train['SalePrice'] = (train['SalePrice'] / 100000).astype(int)
+    train['SalePrice'] = (train['SalePrice'] / 10000).astype(int)
 
-    X, y, X_sub, denormalize = basic_preprocess(train, test, 'SalePrice', ['Id'], categorical=True)
+    train = train.drop('Id', axis=1)
+    test = test.drop('Id', axis=1)
 
-    model = RandomForestClassifier(n_estimators=100)
-    #model = LinearDiscriminantAnalysis()
-    model.fit(X, y.astype(int))
-    results = denormalize(model.predict(X_sub))
+    columns = test.columns.values
+    best = 1000
+    while True:
+      cc = list(filter(lambda _: random() < 0.1, columns))
+      if not cc:
+        continue
 
+      tr = train[cc + ['SalePrice']]
+      te = test[cc]
 
-    #averaged = 10000 * np.ceil(averaged / 10000)
-    results = 100000 * np.floor(results)
+      X, y, X_sub, denormalize = basic_preprocess(tr, te, 'SalePrice', categorical=False)
 
-    save_results(np.round(results).astype(int), 'C:/kaggle_test/', 'basic.csv')
+      model = BayesianRidge()
+      model.fit(X, y.astype(int))
+      results = denormalize(model.predict(X_sub))
+
+      results = np.round(10000 * np.floor(results)).astype(int).astype(float)
+
+      log = np.vectorize(np.math.log2)
+      loss = np.sum(np.abs(log(results) - log(baseline)))
+      
+      if loss < best:
+        best = loss
+        print(best)
+        print(cc)
 

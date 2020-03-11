@@ -12,7 +12,6 @@ def basic_preprocess(train, test, out_column, drop_columns=None, categorical=Fal
   train = train.copy()
   test = test.copy()
   if drop_columns:
-    print('dropping: ' + str(drop_columns))
     train.drop(drop_columns, axis=1, inplace=True)
     test.drop(drop_columns, axis=1, inplace=True)
 
@@ -32,42 +31,25 @@ def basic_preprocess(train, test, out_column, drop_columns=None, categorical=Fal
   objects = list(features.select_dtypes(include=[np.number]).columns.values)
   impute_with_mode(features, objects)
 
-  print('running iterative imputer...')
-  imp = IterativeImputer(max_iter=10, sample_posterior=True, random_state=seed)
   numerics = list(features.select_dtypes(include=[np.number]).columns.values)
-  imp.fit(features[numerics])
-  features[numerics] = imp.transform(features[numerics])
+  if len(numerics) >= 2:
+    imp = IterativeImputer(max_iter=10, sample_posterior=True, random_state=seed)
+    imp.fit(features[numerics])
+    features[numerics] = imp.transform(features[numerics])
+  elif numerics:
+    impute_with_median(features, numerics)
   
-  print('one-hot encoding...')
   final_features = pd.get_dummies(features).reset_index(drop=True)
-  
-  print('normalizing columns')
   normalize_columns(final_features)
 
   X = final_features.iloc[:len(y), :]
   X_sub = final_features.iloc[len(X):, :]
 
-  overfit = []
-  for i in X.columns:
-      counts = X[i].value_counts()
-      zeros = counts.iloc[0]
-      if zeros / len(X) * 100 > 99.94:
-          overfit.append(i)
-
-  overfit = list(overfit)
-  if overfit:
-    print('dropping: ' + str(overfit))
-
-  X = X.drop(overfit, axis=1).copy()
-  X_sub = X_sub.drop(overfit, axis=1).copy()
-
   return X, y, X_sub, denormalize
 
-def count_values(dataframe):
-  count = {}
-  for c in dataframe:
-    count[c] = dataframe[c].value_counts()
-  return count
+def impute_with_median(dataframe, columns):
+  for c in columns:
+    dataframe[c] = dataframe[c].fillna((dataframe[c].median()))
 
 def impute_with_mode(dataframe, columns):
   for c in columns:
@@ -91,6 +73,12 @@ if __name__ == '__main__':
   train = pd.read_csv(root + 'train.csv')
   test = pd.read_csv(root + 'test.csv')
 
+  train = train[train['GrLivArea'] < 4500]
+  train = train.drop(['Utilities', 'Street', 'PoolQC',], axis=1)
+  test = test.drop(['Utilities', 'Street', 'PoolQC',], axis=1)
+
+  train['SalePrice'] = np.floor(train['SalePrice'] / 1000).astype(int)
+
   runs = []
   for i in range(1):
     X, y, X_sub, denormalize = basic_preprocess(train, test, 'SalePrice', ['Id'], seed=i*i)
@@ -102,7 +90,8 @@ if __name__ == '__main__':
     runs.append(results)
 
   averaged = np.mean(runs, axis=0)
-  averaged = 10000 * np.floor(averaged / 10000)
+  #averaged = 10000 * np.floor(averaged / 10000)
+  averaged = 1000 * np.floor(averaged)
 
   save_results(np.round(averaged).astype(int), 'C:/kaggle_test/', 'basic.csv')
 
