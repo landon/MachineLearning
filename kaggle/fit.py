@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     target = "SalePrice"
     idColumn = "Id"
-    data = pd.read_csv("C:/Data/kaggle/house-prices-advanced-regression-techniques/train.csv")
+    data = pd.read_csv("C:/Users/landon/Documents/GitHub/MachineLearning/kaggle/data/house_prices/train.csv")
     numeric_data = data.select_dtypes(include = 'number')
     numeric_data = numeric_data.fillna(0)
 
@@ -73,9 +73,8 @@ if __name__ == "__main__":
     
     # check inversion works
     denormalized_normalized_samples = denormalize(normalized_samples)
-    denormalized_normalized_samples = np.log1p(samples)
     print(f'error: {np.max(np.abs(denormalized_normalized_samples - samples))}')
-    plt.hist(denormalized_normalized_samples, edgecolor='black', linewidth=1.2, bins=bins, label='log1p', density=True, color='red', alpha=1)
-    #plt.hist(normalized_samples, edgecolor='black', linewidth=1.2, bins=bins, label='normalized', density=True, color='blue', alpha=1)
+    plt.hist(denormalized_normalized_samples, edgecolor='black', linewidth=1.2, bins=bins, label='back', density=True, color='red', alpha=1)
+    plt.hist(normalized_samples, edgecolor='black', linewidth=1.2, bins=bins, label='normalized', density=True, color='blue', alpha=1)
     plt.legend()
     plt.show()
