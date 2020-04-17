@@ -16,3 +16,18 @@ def save_results(results, root, name):
   path = save_root + name
   out.to_csv(path, index = False)
   print(f'saved results to {path}')
+
+def denormalize_dill(dill_path, y):
+  import dill
+  return dill.load(open(dill_path, "rb"))(y)
+
+def save_submission(model, root):
+    import numpy as np
+    import pandas as pd
+    X_sub = pd.read_csv(root + 'X_sub.csv')
+    denorm_dill_path = root + "denormalize.dill"
+    results = denormalize_dill(denorm_dill_path, model.predict(X_sub))
+
+    import time
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    save_results(results, root, f'{timestr}.csv')

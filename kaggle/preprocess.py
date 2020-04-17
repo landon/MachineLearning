@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from fit import transform_distribution
-from util import save_results
+from util import save_results, save_submission
 
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -25,7 +25,8 @@ def basic_preprocess(train_complete,
                      columns_to_normalize = None,
                      use_labeler = None,
                      manual_processing = None,
-                     seed=42):
+                     seed=42,
+                     perc=10):
   complete_features = pd.concat([train_complete, test_complete], sort=False).reset_index(drop=True)
   train = train_complete.copy()
   test = test_complete.copy()
@@ -91,13 +92,12 @@ def basic_preprocess(train_complete,
 
   if manual_processing:
     final_features = manual_processing(final_features, complete_features)
-
-  final_features.to_csv('final_features.csv')
-
+  
   X = final_features.iloc[:len(y), :]
   X_sub = final_features.iloc[len(X):, :]
 
-  X, X_sub = select_features(X, y, X_sub, final_features.columns)
+  #print('selecting relevant features')
+  #X, X_sub = select_features(X, y, X_sub, final_features.columns, perc=perc)
 
   return X, y, X_sub, denormalize
 
@@ -113,7 +113,6 @@ def impute_with_mode(dataframe):
     the_mode = dataframe[c].mode()[0]
     dataframe[c] = dataframe[c].fillna(the_mode)
     
-
 def normalize_columns(dataframe, columns_to_normalize):
   for c in columns_to_normalize:
     data = dataframe[c]
@@ -122,7 +121,7 @@ def normalize_columns(dataframe, columns_to_normalize):
         normalize, _ = transform_distribution(data)
         dataframe[c] = normalize(data)
 
-def select_features(X, y, X_sub, feature_name, perc=10, max_depth=5, verbose=0):
+def select_features(X, y, X_sub, feature_name, perc=10, max_depth=5, verbose=2):
   import sklearn.ensemble
   from boruta import BorutaPy
 
@@ -134,57 +133,54 @@ def select_features(X, y, X_sub, feature_name, perc=10, max_depth=5, verbose=0):
   print(used_features)
   return feat_selector.transform(X.values), feat_selector.transform(X_sub.values)
 
-
-def do_regression(root,
-                  out_column, 
-                  drop_columns=None,
-                  forced_categorical = None, 
-                  forced_numeric = None, 
-                  columns_to_normalize = None,
-                  use_labeler = None,
-                  manual_processing = None,
-                  round_results = True):
+def preprocess( root,
+                out_column, 
+                drop_columns=None,
+                forced_categorical = None, 
+                forced_numeric = None, 
+                columns_to_normalize = None,
+                use_labeler = None,
+                manual_processing = None,
+                perc=10):
   train = pd.read_csv(root + 'train.csv')
   test = pd.read_csv(root + 'test.csv')
 
-  print('loaded data')
-
   X, y, X_sub, denormalize = basic_preprocess(train, 
                                               test, 
-                                              target_column, 
-                                              columns_to_drop, 
+                                              out_column, 
+                                              drop_columns, 
                                               forced_categorical, 
                                               forced_numeric, 
                                               columns_to_normalize, 
                                               use_labeler,
-                                              manual_processing)
+                                              manual_processing,
+                                              perc)
 
-  print('preprocessed')
 
-  import sklearn.ensemble
-  model = sklearn.ensemble.RandomForestRegressor(n_estimators=100)
-  model.fit(X, y)
-  results = denormalize(model.predict(X_sub))
+  import dill
+  dill.dump(denormalize, open(root + 'denormalize.dill', 'wb'))
+  
+  X.to_csv(root + 'X.csv', index = False)
+  ydf = pd.DataFrame()
+  ydf[out_column] = y
+  ydf.to_csv(root + 'y.csv', index = False)
+  X_sub.to_csv(root + 'X_sub.csv', index = False)
 
-  if round_results:
-    results = np.round(results).astype(int)
+def house_prices_preprocess():
+  competition = 'house-prices-advanced-regression-techniques'
+  root = f'C:/data/{competition}/'
 
-  save_results(results, root, 'basic.csv')
-
-if __name__ == '__main__':
-  root = 'C:/Users/landon/Documents/GitHub/MachineLearning/kaggle/data/restaurant_revenue/'
-  target_column = 'revenue'
-  columns_to_drop = ['Id', 'Open Date', 'City']
+  target_column = 'SalePrice'
+  columns_to_drop = ['Id']
   forced_categorical = []
   forced_numeric = []
-  columns_to_normalize = ['revenue']
-  use_labeler = ['P' + str(i) for i in range(1, 38)]
+  columns_to_normalize = [target_column]
+  use_labeler = []
 
   def manual_processing(features, complete_features):
-    features['days_since_open'] = [(datetime(2020, 1, 1) - datetime.strptime(f, '%m/%d/%Y')).days for f in complete_features['Open Date']]
     return features
 
-  do_regression(root, 
+  preprocess(root, 
                 target_column, 
                 columns_to_drop, 
                 forced_categorical, 
@@ -192,3 +188,24 @@ if __name__ == '__main__':
                 columns_to_normalize, 
                 use_labeler, 
                 manual_processing)
+  return root
+
+def load_train(root):
+  X = pd.read_csv(root + "X.csv")
+  y = pd.read_csv(root + "y.csv").to_numpy().ravel()
+  return X, y
+
+def make_submission_with_model(model, root):
+  X, y = load_train(root)
+  model.fit(X, y)
+  save_submission(model, root)
+
+if __name__ == '__main__':
+  from sklearn.linear_model import BayesianRidge
+  model = BayesianRidge()
+  
+  root = house_prices_preprocess()
+  make_submission_with_model(model, root)
+  
+
+  
