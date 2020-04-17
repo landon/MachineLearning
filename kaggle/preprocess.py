@@ -166,30 +166,6 @@ def preprocess( root,
   ydf.to_csv(root + 'y.csv', index = False)
   X_sub.to_csv(root + 'X_sub.csv', index = False)
 
-def house_prices_preprocess():
-  competition = 'house-prices-advanced-regression-techniques'
-  root = f'C:/data/{competition}/'
-
-  target_column = 'SalePrice'
-  columns_to_drop = ['Id']
-  forced_categorical = []
-  forced_numeric = []
-  columns_to_normalize = [target_column]
-  use_labeler = []
-
-  def manual_processing(features, complete_features):
-    return features
-
-  preprocess(root, 
-                target_column, 
-                columns_to_drop, 
-                forced_categorical, 
-                forced_numeric, 
-                columns_to_normalize, 
-                use_labeler, 
-                manual_processing)
-  return root
-
 def load_train(root):
   X = pd.read_csv(root + "X.csv")
   y = pd.read_csv(root + "y.csv").to_numpy().ravel()
@@ -198,14 +174,4 @@ def load_train(root):
 def make_submission_with_model(model, root):
   X, y = load_train(root)
   model.fit(X, y)
-  save_submission(model, root)
-
-if __name__ == '__main__':
-  from sklearn.linear_model import BayesianRidge
-  model = BayesianRidge()
-  
-  root = house_prices_preprocess()
-  make_submission_with_model(model, root)
-  
-
-  
+  return save_submission(model, root)
