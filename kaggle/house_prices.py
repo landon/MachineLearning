@@ -1,7 +1,7 @@
 from preprocess import preprocess
 from kaggle_util import make_submission_with_model, get_kaggle_scores, submit_to_kaggle
 
-def house_prices_preprocess():
+def house_prices_preprocess(root):
   target_column = 'SalePrice'
   columns_to_drop = ['Id']
   forced_categorical = []
@@ -23,7 +23,7 @@ def house_prices_preprocess():
 
 if __name__ == '__main__':
   competition = 'house-prices-advanced-regression-techniques'
-  root = f'C:/data/{competition}/'
+  root = f'C:/data/{competition}/' 
 
   print(get_kaggle_scores(competition))
 
