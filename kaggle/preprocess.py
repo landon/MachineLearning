@@ -166,12 +166,4 @@ def preprocess( root,
   ydf.to_csv(root + 'y.csv', index = False)
   X_sub.to_csv(root + 'X_sub.csv', index = False)
 
-def load_train(root):
-  X = pd.read_csv(root + "X.csv")
-  y = pd.read_csv(root + "y.csv").to_numpy().ravel()
-  return X, y
 
-def make_submission_with_model(model, root):
-  X, y = load_train(root)
-  model.fit(X, y)
-  return save_submission(model, root)

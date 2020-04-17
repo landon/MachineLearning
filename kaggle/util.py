@@ -1,10 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-def binarize(arr, thresh):
-    arr[arr < thresh] = 0
-    arr[arr >= thresh] = 1
 
 def save_results(results, root, name):
   save_root = root + '/submissions/'
@@ -31,5 +25,30 @@ def save_submission(model, root):
 
     import time
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    return save_results(results, root, f'{timestr}.csv')
-    
+    path = save_results(results, root, f'{timestr}.csv')
+    return path
+
+def submit_to_kaggle(path, competition):
+  from kaggle.api.kaggle_api_extended import KaggleApi
+  api = KaggleApi()
+  api.authenticate()
+
+  api.competition_submit(path, 'API Submission', competition)
+
+def get_kaggle_scores(competition):
+    from kaggle.api.kaggle_api_extended import KaggleApi
+    api = KaggleApi()
+    api.authenticate()
+
+    prior_submissions = [p.__dict__ for p in api.competition_submissions(competition)]
+    return [p["publicScore"] for p in prior_submissions]
+
+def load_train(root):
+  X = pd.read_csv(root + "X.csv")
+  y = pd.read_csv(root + "y.csv").to_numpy().ravel()
+  return X, y
+
+def make_submission_with_model(model, root):
+  X, y = load_train(root)
+  model.fit(X, y)
+  return save_submission(model, root)
