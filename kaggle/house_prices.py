@@ -30,5 +30,4 @@ if __name__ == '__main__':
   from sklearn.linear_model import BayesianRidge
   model = BayesianRidge()
   path = make_submission_with_model(model, root)
-
-  submit_to_kaggle(path, competition)
+  #submit_to_kaggle(path, competition)
